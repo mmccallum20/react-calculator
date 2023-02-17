@@ -3,6 +3,8 @@ import "./App.css";
 import { useReducer } from "react";
 import Digits from "./Digits";
 import Operations from "./Operations";
+import { useDispatch } from "react-redux";
+import { connect } from "react-redux";
 
 export const ACTIONS = {
   ADD_DIGIT: "add-digit",
@@ -12,47 +14,47 @@ export const ACTIONS = {
   EVALUATE: "evaluate",
 };
 
-function reducer(state, { type, payload }) {
+export function actionReducer(initialState = 0, { type, payload }) {
   switch (type) {
     case ACTIONS.ADD_DIGIT:
-      if (state.resetValue) {
+      if (initialState.resetValue) {
         return {
-          ...state,
+          ...initialState,
           display: payload.digit,
           resetValue: false,
         };
       }
 
-      if (payload.digit === "0" && state.display === "0") {
-        return state;
+      if (payload.digit === "0" && initialState.display === "0") {
+        return initialState;
       }
 
-      if (payload.digit === "." && state.display.includes(".")) {
-        return state;
+      if (payload.digit === "." && initialState.display.includes(".")) {
+        return initialState;
       }
 
       return {
-        ...state,
-        display: `${state.display || ""}${payload.digit}`,
+        ...initialState,
+        display: `${initialState.display || ""}${payload.digit}`,
       };
     case ACTIONS.CHOOSE_OPERATION:
-      if (state.display === null && state.previousCalc === null) {
-        return state;
+      if (initialState.display === null && initialState.previousCalc === null) {
+        return initialState;
       }
-      if (state.display == null) {
-        return { ...state, operation: payload.operation };
+      if (initialState.display == null) {
+        return { ...initialState, operation: payload.operation };
       }
-      if (state.previousCalc == null) {
+      if (initialState.previousCalc == null) {
         return {
-          ...state,
+          ...initialState,
           operation: payload.operation,
-          previousCalc: state.display,
+          previousCalc: initialState.display,
           display: null,
         };
       }
       return {
-        ...state,
-        previousCalc: calculate(state),
+        ...initialState,
+        previousCalc: calculate(initialState),
         operation: payload.operation,
         display: null,
       };
@@ -62,45 +64,45 @@ function reducer(state, { type, payload }) {
 
     case ACTIONS.EVALUATE:
       if (
-        state.operation == null ||
-        state.display == null ||
-        state.previousCalc == null
+        initialState.operation == null ||
+        initialState.display == null ||
+        initialState.previousCalc == null
       ) {
-        return state;
+        return initialState;
       }
       return {
-        ...state,
+        ...initialState,
         resetValue: true,
         previousCalc: null,
         operation: null,
-        display: calculate(state),
+        display: calculate(initialState),
       };
     case ACTIONS.DELETE_DIGIT:
-      if (state.resetValue === true) {
+      if (initialState.resetValue === true) {
         return {
-          ...state,
+          ...initialState,
           resetValue: false,
           display: null,
         };
       }
 
-      if (state.display == null) {
-        return state;
+      if (initialState.display == null) {
+        return initialState;
       }
-      if (state.display.length === 1) {
+      if (initialState.display.length === 1) {
         return {
-          ...state,
+          ...initialState,
           display: null,
         };
       }
 
       return {
-        ...state,
-        display: state.display.slice(0, -1),
+        ...initialState,
+        display: initialState.display.slice(0, -1),
       };
 
     default:
-      return state;
+      return initialState;
   }
 }
 
@@ -132,9 +134,13 @@ function calculate({ display, previousCalc, operation }) {
 
 function App() {
   const [{ display = 0, previousCalc, operation }, dispatch] = useReducer(
-    reducer,
+    actionReducer,
     {}
   );
+
+  function setOperation(operation) {
+    dispatch({ type: ACTIONS.CHOOSE_OPERATION, payload: { operation } });
+  }
 
   return (
     <div className="calculator-grid">
@@ -157,7 +163,7 @@ function App() {
       <button onClick={() => dispatch({ type: ACTIONS.DELETE_DIGIT })}>
         DEL
       </button>
-      <Operations id="add" operation="+" dispatch={dispatch} />
+      <Operations id="add" operation="+" setOperation={setOperation} />
       <Digits id="one" digit="1" dispatch={dispatch} />
       <Digits id="two" digit="2" dispatch={dispatch} />
       <Digits id="three" digit="3" dispatch={dispatch} />
@@ -186,4 +192,8 @@ function App() {
   );
 }
 
-export default App;
+const mapStateToProps = (state) => ({
+  operation: state.operation,
+});
+
+export default connect(mapStateToProps)(App);

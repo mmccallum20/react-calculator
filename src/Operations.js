@@ -1,13 +1,6 @@
-import { ACTIONS } from "./App";
+export default function Operations({ setOperation, operation }) {
+  //let operation = "-";
 
-export default function Operations({ dispatch, operation }) {
-  return (
-    <button
-      onClick={() =>
-        dispatch({ type: ACTIONS.CHOOSE_OPERATION, payload: { operation } })
-      }
-    >
-      {operation}
-    </button>
-  );
+  // next thing to do - choose from the four operations: + - x / s
+  return <button onClick={() => setOperation(operation)}>{operation}</button>;
 }
