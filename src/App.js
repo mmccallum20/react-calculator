@@ -128,6 +128,8 @@ function calculate({ display, previousCalc, operation }) {
     case "/":
       computation = prev / current;
       break;
+    default:
+      computation = 0;
   }
   return computation.toString();
 }
@@ -139,7 +141,15 @@ function App() {
   );
 
   function setOperation(operation) {
+    //can we use the hook useDispatch here?
+
     dispatch({ type: ACTIONS.CHOOSE_OPERATION, payload: { operation } });
+  }
+
+  function setDigit(digit) {
+    //can we use the hook useDispatch here?
+
+    dispatch({ type: ACTIONS.ADD_DIGIT, payload: { digit } });
   }
 
   return (
@@ -164,23 +174,23 @@ function App() {
         DEL
       </button>
       <Operations id="add" operation="+" setOperation={setOperation} />
-      <Digits id="one" digit="1" dispatch={dispatch} />
-      <Digits id="two" digit="2" dispatch={dispatch} />
-      <Digits id="three" digit="3" dispatch={dispatch} />
-      <Operations id="subtract" operation="-" dispatch={dispatch} />
+      <Digits id="one" digit="1" setDigit={setDigit} />
+      <Digits id="two" digit="2" setDigit={setDigit} />
+      <Digits id="three" digit="3" setDigit={setDigit} />
+      <Operations id="subtract" operation="-" setOperation={setOperation} />
 
-      <Digits id="four" digit="4" dispatch={dispatch} />
-      <Digits id="five" digit="5" dispatch={dispatch} />
-      <Digits id="six" digit="6" dispatch={dispatch} />
-      <Operations id="multiply" operation="x" dispatch={dispatch} />
+      <Digits id="four" digit="4" setDigit={setDigit} />
+      <Digits id="five" digit="5" setDigit={setDigit} />
+      <Digits id="six" digit="6" setDigit={setDigit} />
+      <Operations id="multiply" operation="x" setOperation={setOperation} />
 
-      <Digits id="seven" digit="7" dispatch={dispatch} />
-      <Digits id="eight" digit="8" dispatch={dispatch} />
-      <Digits id="nine" digit="9" dispatch={dispatch} />
-      <Operations id="divide" operation="/" dispatch={dispatch} />
+      <Digits id="seven" digit="7" setDigit={setDigit} />
+      <Digits id="eight" digit="8" setDigit={setDigit} />
+      <Digits id="nine" digit="9" setDigit={setDigit} />
+      <Operations id="divide" operation="/" setOperation={setOperation} />
 
-      <Digits id="zero" digit="0" dispatch={dispatch} />
-      <Digits id="decimal" digit="." dispatch={dispatch} />
+      <Digits id="zero" digit="0" setDigit={setDigit} />
+      <Digits id="decimal" digit="." setDigit={setDigit} />
       <button
         id="equals"
         onClick={() => dispatch({ type: ACTIONS.EVALUATE })}
