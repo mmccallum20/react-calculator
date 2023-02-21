@@ -1,138 +1,14 @@
 import "./styles.css";
 import "./App.css";
 import { useReducer } from "react";
+import {actionReducer} from "./actionReducer";
+import {ACTIONS} from "./actionReducer";
 import Digits from "./Digits";
 import Operations from "./Operations";
-import { useDispatch } from "react-redux";
 import { connect } from "react-redux";
 
-export const ACTIONS = {
-  ADD_DIGIT: "add-digit",
-  DELETE_DIGIT: "delete-digit",
-  CHOOSE_OPERATION: "choose-operation",
-  CLEAR: "clear",
-  EVALUATE: "evaluate",
-};
 
-export function actionReducer(initialState = 0, { type, payload }) {
-  switch (type) {
-    case ACTIONS.ADD_DIGIT:
-      if (initialState.resetValue) {
-        return {
-          ...initialState,
-          display: payload.digit,
-          resetValue: false,
-        };
-      }
 
-      if (payload.digit === "0" && initialState.display === "0") {
-        return initialState;
-      }
-
-      if (payload.digit === "." && initialState.display.includes(".")) {
-        return initialState;
-      }
-
-      return {
-        ...initialState,
-        display: `${initialState.display || ""}${payload.digit}`,
-      };
-    case ACTIONS.CHOOSE_OPERATION:
-      if (initialState.display === null && initialState.previousCalc === null) {
-        return initialState;
-      }
-      if (initialState.display == null) {
-        return { ...initialState, operation: payload.operation };
-      }
-      if (initialState.previousCalc == null) {
-        return {
-          ...initialState,
-          operation: payload.operation,
-          previousCalc: initialState.display,
-          display: null,
-        };
-      }
-      return {
-        ...initialState,
-        previousCalc: calculate(initialState),
-        operation: payload.operation,
-        display: null,
-      };
-
-    case ACTIONS.CLEAR:
-      return {};
-
-    case ACTIONS.EVALUATE:
-      if (
-        initialState.operation == null ||
-        initialState.display == null ||
-        initialState.previousCalc == null
-      ) {
-        return initialState;
-      }
-      return {
-        ...initialState,
-        resetValue: true,
-        previousCalc: null,
-        operation: null,
-        display: calculate(initialState),
-      };
-    case ACTIONS.DELETE_DIGIT:
-      if (initialState.resetValue === true) {
-        return {
-          ...initialState,
-          resetValue: false,
-          display: null,
-        };
-      }
-
-      if (initialState.display == null) {
-        return initialState;
-      }
-      if (initialState.display.length === 1) {
-        return {
-          ...initialState,
-          display: null,
-        };
-      }
-
-      return {
-        ...initialState,
-        display: initialState.display.slice(0, -1),
-      };
-
-    default:
-      return initialState;
-  }
-}
-
-function calculate({ display, previousCalc, operation }) {
-  const prev = parseFloat(previousCalc);
-  const current = parseFloat(display);
-
-  if (isNaN(prev) || isNaN(current)) {
-    return "";
-  }
-
-  let computation = "";
-  switch (operation) {
-    case "+":
-      computation = prev + current;
-      break;
-    case "-":
-      computation = prev - current;
-      break;
-    case "x":
-      computation = prev * current;
-      break;
-    case "/":
-      computation = prev / current;
-      break;
-    default:
-      computation = 0;
-  }
-  return computation.toString();
-}
 
 function App() {
   const [{ display = 0, previousCalc, operation }, dispatch] = useReducer(
@@ -140,11 +16,10 @@ function App() {
     {}
   );
 
-  function setOperation(operation) {
-    //can we use the hook useDispatch here?
+    function setOperation(operation) {
 
-    dispatch({ type: ACTIONS.CHOOSE_OPERATION, payload: { operation } });
-  }
+        dispatch({ type: ACTIONS.CHOOSE_OPERATION, payload: { operation } });
+    }
 
   function setDigit(digit) {
     //can we use the hook useDispatch here?
@@ -177,7 +52,7 @@ function App() {
       <Digits id="one" digit="1" setDigit={setDigit} />
       <Digits id="two" digit="2" setDigit={setDigit} />
       <Digits id="three" digit="3" setDigit={setDigit} />
-      <Operations id="subtract" operation="-" setOperation={setOperation} />
+      <Operations id="subtract" operation="-" setOperation={setOperation}/>
 
       <Digits id="four" digit="4" setDigit={setDigit} />
       <Digits id="five" digit="5" setDigit={setDigit} />

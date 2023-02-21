@@ -1,14 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import App, { actionReducer } from "./App";
+import App from "./App";
 import { combineReducers } from "redux";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-const reducer = combineReducers({ actionReducer });
+const reducer = combineReducers({ });
 const store = configureStore({ reducer });
 
 root.render(
@@ -18,7 +18,5 @@ root.render(
     </Provider>
   </React.StrictMode>
 );
-
-//copied
 
 export default store;
