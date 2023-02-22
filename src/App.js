@@ -77,6 +77,7 @@ function App() {
   );
 }
 
+//is this needed?
 const mapStateToProps = (state) => ({
   operation: state.operation,
 });

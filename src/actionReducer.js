@@ -13,11 +13,41 @@ export function actionReducer(initialState = 0, { type, payload }) {
     switch (type) {
         case ACTIONS.ADD_DIGIT:
             if (initialState.resetValue) {
+                if (payload.digit === '.') {
+                    console.log('The payload digit is a decimal');
+                    return {...initialState,
+                        display: payload.digit = "0.",
+                        resetValue: false,
+
+                    }
+                }
                 return {
                     ...initialState,
                     display: payload.digit,
                     resetValue: false,
                 };
+            }
+
+            // left off working here, this statement isn't working properly, trying to convert . into 0.
+
+            if (payload.digit === "." && initialState.display === undefined) {
+                console.log("The initial state display is undefined")
+                return {...initialState,
+                    display: payload.digit = "0.",
+                }
+
+
+
+
+
+            }
+
+            if (payload.digit === ".") {
+                console.log("This is working")
+                if (payload.digit === "." && initialState.display.includes(".")) {
+                    return initialState;
+                }
+
             }
 
             if (payload.digit === "0" && initialState.display === "0") {
@@ -33,21 +63,21 @@ export function actionReducer(initialState = 0, { type, payload }) {
                 display: `${initialState.display || ""}${payload.digit}`,
             };
         case ACTIONS.CHOOSE_OPERATION:
-            console.log(payload.operation);
 
             //if the display is empty and the previous display is empty, return nothing
 
             if (initialState.display === null && initialState.previousCalc === null) {
-                console.log('first');
                 return initialState;
             }
 
             //if the display is empty (but the previous calculation is NOT empty)
-            //return the initial state but with the operation as payload.operation
-            //ie whatever operation you just typed in
+
+            // a) if the operation is a minus (-), the operation is now
+            // the initial operation + the payload operation ie a double operation
+            // b) otherwise override the initial state with whatever the last operation typed was
+
 
             if (initialState.display == null) {
-                console.log('second');
                 if (payload.operation === '-') {
                     return {
                         ...initialState,
@@ -59,7 +89,6 @@ export function actionReducer(initialState = 0, { type, payload }) {
             }
 
             if (initialState.previousCalc == null) {
-                console.log('third');
 
                 return {
                     ...initialState,
